@@ -177,6 +177,18 @@ watch(() => props.bookId, () => {
 .book-container.align-back {
   transform: translateX(25%);
 }
+
+@media (max-width: 640px) {
+  .book-container.align-cover {
+    transform: translateX(-8%);
+  }
+  .book-container.align-back {
+    transform: translateX(8%);
+  }
+  .pdf-flipbook {
+    padding: 0.5rem 0;
+  }
+}
 .book-container :deep(.page) {
   box-shadow:
     0 1px 3px rgba(0, 0, 0, 0.08),

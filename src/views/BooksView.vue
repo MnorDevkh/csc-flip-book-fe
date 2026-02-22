@@ -1,52 +1,13 @@
 <template>
   <div class="flex h-screen overflow-hidden bg-background-light font-display text-slate-800">
-    <!-- Sidebar -->
-    <aside class="w-60 border-r border-slate-200/80 bg-white flex flex-col shrink-0">
-      <div class="px-5 h-16 flex items-center gap-2.5 border-b border-slate-100">
-        <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-          <span class="material-symbols-outlined text-white !text-lg">menu_book</span>
-        </div>
-        <span class="text-base font-bold tracking-tight text-slate-900">DocPortal</span>
-      </div>
-
-      <nav class="flex-1 p-3 space-y-0.5">
-        <router-link
-          to="/books"
-          class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg bg-primary/8 text-primary"
-        >
-          <span class="material-symbols-outlined !text-[20px]">description</span>
-          Documents
-        </router-link>
-        <router-link
-          v-if="authStore.isAdmin"
-          to="/admin"
-          class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors"
-        >
-          <span class="material-symbols-outlined !text-[20px]">admin_panel_settings</span>
-          Administration
-        </router-link>
-      </nav>
-
-      <div class="p-4 border-t border-slate-100">
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-            <span class="material-symbols-outlined text-primary !text-[18px]">person</span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-xs font-medium text-slate-700 truncate">
-              {{ authStore.isAuthenticated ? 'Signed in' : 'Guest' }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </aside>
+    <AppSidebar v-model="sidebarOpen" />
 
     <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
-      <AppNavbar v-model:search-query="searchQuery" />
-      <div class="p-8 flex-1">
-        <div class="mb-8">
-          <h2 class="text-xl font-bold text-slate-900">Documents</h2>
+    <main class="flex-1 overflow-y-auto custom-scrollbar flex flex-col min-w-0">
+      <AppNavbar v-model:search-query="searchQuery" :sidebar-open="sidebarOpen" @toggle-sidebar="sidebarOpen = !sidebarOpen" />
+      <div class="p-4 sm:p-6 md:p-8 flex-1">
+        <div class="mb-6 md:mb-8">
+          <h2 class="text-lg sm:text-xl font-bold text-slate-900">Documents</h2>
           <p class="text-sm text-slate-500 mt-1">Browse and read your flipbook collection</p>
         </div>
 
@@ -118,7 +79,7 @@
           <router-link
             v-if="authStore.isAdmin"
             to="/upload"
-            class="border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-3 text-slate-400 hover:text-primary hover:border-primary/40 hover:bg-primary/[0.03] transition-all min-h-[320px]"
+            class="border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-3 text-slate-400 hover:text-primary hover:border-primary/40 hover:bg-primary/[0.03] transition-all min-h-[260px] sm:min-h-[320px]"
           >
             <div class="w-14 h-14 rounded-xl bg-slate-50 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
               <span class="material-symbols-outlined !text-3xl">add</span>
@@ -145,6 +106,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppNavbar from '@/components/AppNavbar.vue'
+import AppSidebar from '@/components/AppSidebar.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useBooksStore } from '@/stores/books'
 import { booksApi } from '@/api/books'
@@ -154,6 +116,7 @@ const authStore = useAuthStore()
 const booksStore = useBooksStore()
 const searchQuery = ref('')
 const failedCoverIds = ref({})
+const sidebarOpen = ref(false)
 
 function onCoverError(id) {
   failedCoverIds.value = { ...failedCoverIds.value, [id]: true }
