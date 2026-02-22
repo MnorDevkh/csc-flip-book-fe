@@ -22,7 +22,28 @@
         <h1 class="text-2xl font-bold text-slate-900 mb-1">Welcome back</h1>
         <p class="text-slate-500 text-sm mb-8">Sign in to your account to continue</p>
 
-        <form @submit.prevent="onSubmit" class="space-y-5">
+        <!-- Success state after sign-in -->
+        <div v-if="signedIn" class="space-y-4">
+          <p class="text-slate-600 text-sm">You're signed in. Where would you like to go?</p>
+          <div class="flex flex-col gap-3">
+            <router-link
+              to="/books"
+              class="w-full py-2.5 bg-primary text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-primary-dark focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 transition-all text-center"
+            >
+              Go to Books
+            </router-link>
+            <router-link
+              v-if="authStore.isAdmin"
+              to="/admin/dashboard"
+              class="w-full py-2.5 bg-slate-700 text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-slate-800 focus:ring-2 focus:ring-slate-500/40 focus:ring-offset-2 transition-all text-center flex items-center justify-center gap-2"
+            >
+              <span class="material-symbols-outlined !text-[18px]">admin_panel_settings</span>
+              Go to Admin Dashboard
+            </router-link>
+          </div>
+        </div>
+
+        <form v-else @submit.prevent="onSubmit" class="space-y-5">
           <div>
             <label for="email" class="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
             <input
@@ -57,7 +78,7 @@
           </button>
         </form>
 
-        <p class="mt-8 text-center text-sm text-slate-500">
+        <p v-if="!signedIn" class="mt-8 text-center text-sm text-slate-500">
           Don't have an account?
           <router-link to="/register" class="text-primary font-semibold hover:text-primary-dark transition-colors">Create one</router-link>
         </p>
@@ -68,23 +89,22 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
-const router = useRouter()
 const authStore = useAuthStore()
 
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
 const error = ref('')
+const signedIn = ref(false)
 
 async function onSubmit() {
   loading.value = true
   error.value = ''
   try {
     await authStore.login(email.value, password.value)
-    router.push('/books')
+    signedIn.value = true
   } catch (e) {
     error.value = e.response?.data?.detail || e.message || 'Login failed'
   } finally {

@@ -43,51 +43,7 @@
 
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
-      <header
-        class="sticky top-0 z-10 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-8 h-16 flex items-center justify-between shrink-0"
-      >
-        <div class="relative w-80">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 !text-[18px]">search</span>
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search documents..."
-            class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm placeholder:text-slate-400 transition-all focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/15"
-          />
-        </div>
-        <div class="flex items-center gap-2">
-          <router-link
-            v-if="authStore.isAdmin"
-            to="/upload"
-            class="inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg shadow-sm shadow-primary/25 hover:bg-primary-dark transition-all"
-          >
-            <span class="material-symbols-outlined !text-[18px]">upload</span>
-            Upload
-          </router-link>
-          <router-link
-            to="/about"
-            class="px-3 py-2 text-slate-500 text-sm font-medium hover:text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
-          >
-            About
-          </router-link>
-          <div class="h-5 w-px bg-slate-200 mx-1"></div>
-          <router-link
-            v-if="!authStore.isAuthenticated"
-            to="/login"
-            class="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors"
-          >
-            Sign in
-          </router-link>
-          <button
-            v-else
-            @click="authStore.logout"
-            class="px-3 py-2 text-slate-500 text-sm font-medium hover:text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
-          >
-            Sign out
-          </button>
-        </div>
-      </header>
-
+      <AppNavbar v-model:search-query="searchQuery" />
       <div class="p-8 flex-1">
         <div class="mb-8">
           <h2 class="text-xl font-bold text-slate-900">Documents</h2>
@@ -188,6 +144,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import AppNavbar from '@/components/AppNavbar.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useBooksStore } from '@/stores/books'
 import { booksApi } from '@/api/books'
