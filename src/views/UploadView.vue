@@ -5,7 +5,7 @@
       <button
         type="button"
         class="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-600 transition-colors"
-        @click="$router.push('/books')"
+        @click="$router.push(returnToAdmin ? '/admin/books' : '/books')"
       >
         <span class="material-symbols-outlined !text-xl">arrow_back</span>
       </button>
@@ -83,16 +83,19 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { uploadApi } from '@/api/upload'
 
+const route = useRoute()
 const router = useRouter()
 const title = ref('')
 const file = ref(null)
 const loading = ref(false)
 const error = ref('')
 const success = ref('')
+
+const returnToAdmin = computed(() => route.query.from === 'admin')
 
 function onFileChange(e) {
   file.value = e.target.files?.[0] || null
@@ -109,6 +112,9 @@ async function onSubmit() {
     title.value = ''
     file.value = null
     document.getElementById('file').value = ''
+    if (returnToAdmin.value) {
+      setTimeout(() => router.push('/admin/books'), 1200)
+    }
   } catch (e) {
     error.value = e.response?.data?.detail || e.message || 'Upload failed'
   } finally {
