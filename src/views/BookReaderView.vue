@@ -29,38 +29,54 @@
       </div>
     </header>
 
-    <!-- Reader Area -->
+    <!-- Reader Area: stable min-height so loading → flipbook doesn’t jump -->
     <main class="flex-1 flex flex-col overflow-hidden min-h-0">
-      <div class="flex-1 flex items-center justify-center p-3 sm:p-6 relative min-h-0 overflow-auto">
-        <!-- Loading -->
-        <div v-if="loading" class="flex flex-col items-center gap-3">
-          <svg class="animate-spin h-8 w-8 text-primary/60" viewBox="0 0 24 24" fill="none">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" />
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-          </svg>
-          <p class="text-sm text-slate-400 font-medium">Loading book...</p>
-        </div>
-
-        <!-- Error -->
-        <div v-else-if="error" class="text-center max-w-sm">
-          <span class="material-symbols-outlined !text-5xl text-red-300 mb-3 block">error</span>
-          <p class="text-red-600 font-medium text-sm">{{ error }}</p>
-          <button
-            @click="loadBook"
-            class="mt-4 px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors"
+      <div
+        class="flex-1 flex items-center justify-center p-3 sm:p-6 relative min-h-0 overflow-auto reader-area"
+      >
+        <Transition name="reader-fade" mode="out-in">
+          <!-- Loading -->
+          <div
+            v-if="loading"
+            key="loading"
+            class="reader-state w-full h-full min-h-[400px] flex flex-col items-center justify-center gap-3"
           >
-            Try again
-          </button>
-        </div>
+            <svg class="animate-spin h-8 w-8 text-primary/60 shrink-0" viewBox="0 0 24 24" fill="none">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            <p class="text-sm text-slate-400 font-medium">Loading book...</p>
+          </div>
 
-        <!-- Flipbook -->
-        <div v-else-if="book" class="w-full h-full flex items-center justify-center">
-          <PdfFlipbook
-            :key="book.id"
-            :book-id="book.id"
-            :total-pages="book.total_pages"
-          />
-        </div>
+          <!-- Error -->
+          <div
+            v-else-if="error"
+            key="error"
+            class="reader-state w-full h-full min-h-[400px] flex flex-col items-center justify-center text-center"
+          >
+            <span class="material-symbols-outlined !text-5xl text-red-300 mb-3 block">error</span>
+            <p class="text-red-600 font-medium text-sm max-w-sm">{{ error }}</p>
+            <button
+              @click="loadBook"
+              class="mt-4 px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors"
+            >
+              Try again
+            </button>
+          </div>
+
+          <!-- Flipbook -->
+          <div
+            v-else-if="book"
+            key="book"
+            class="reader-state w-full h-full min-h-[400px] flex items-center justify-center"
+          >
+            <PdfFlipbook
+              :key="book.id"
+              :book-id="book.id"
+              :total-pages="book.total_pages"
+            />
+          </div>
+        </Transition>
       </div>
 
       <!-- Footer hint -->
@@ -108,3 +124,31 @@ watch(
   () => loadBook()
 )
 </script>
+
+<style scoped>
+.reader-area {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (min-width: 640px) {
+  .reader-area {
+    min-height: 65vh;
+  }
+}
+
+.reader-state {
+  flex: 1 1 auto;
+  align-self: stretch;
+}
+
+.reader-fade-enter-active,
+.reader-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.reader-fade-enter-from,
+.reader-fade-leave-to {
+  opacity: 0;
+}
+</style>

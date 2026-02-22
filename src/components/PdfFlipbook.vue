@@ -164,6 +164,15 @@ watch(() => props.bookId, () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: flipbook-in 0.25s ease-out;
+}
+@keyframes flipbook-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 .book-container {
   width: 100%;
@@ -179,11 +188,9 @@ watch(() => props.bookId, () => {
 }
 
 @media (max-width: 640px) {
-  .book-container.align-cover {
-    transform: translateX(-8%);
-  }
+  .book-container.align-cover,
   .book-container.align-back {
-    transform: translateX(8%);
+    transform: none;
   }
   .pdf-flipbook {
     padding: 0.5rem 0;
